@@ -80,14 +80,14 @@ class beacons(object):
         next_beacon=('Unk','Unk')
         second_in_phase=(ts_now.minute*60+ts_now.second)%300
         next_active=(((int(second_in_phase/10))*10)+10)%180
-        logger.info(str.format('Band {} Seconds {} next {} ',self.selected_band, second_in_phase,next_active))
+        self.logger.info(str.format('Band {} Seconds {} next {} ',self.selected_band, second_in_phase,next_active))
 
         for b in self.beacons:
             if b.band_time[self.selected_band] == next_active:
-                logger.info(str.format('Band time Index {}  {}',b.CALL,b.band_time[self.selected_band]))
+                self.logger.info(str.format('Band time Index {}  {}',b.CALL,b.band_time[self.selected_band]))
                 next_beacon=(b.CALL,b.Country)
                 return next_beacon
-        logger.error(str.format('Can not calculate next beacon'))
+        self.logger.error(str.format('Can not calculate next beacon'))
         return next_beacon
 
 
