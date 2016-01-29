@@ -85,12 +85,27 @@ class beacons(object):
         delay = 10.0 - tnow.timestamp() % 10
         return tnow, delay
 
+    def minsec(self,offset):
+        '''
+        Return Minute and Seconds offset of Timeslice
+        :param offset:
+        :return: Tuple (Min,Sec)
+        '''
+        Min=int(offset/60)
+        Sec=offset-(Min*60)
+        return (Min,Sec)
+
     def getstation(self):
         ts_now = datetime.datetime.now()
-    
+        time_diff=(beacons.ref_datetime - ts_now).seconds
         next_beacon = ('Unk', 'Unk')
-        second_in_phase = (ts_now.minute * 60 + ts_now.second) % 300
-        next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
+        second_in_phase = 300-((time_diff) % 300)
+        print("Seconds in Phase = %d"%second_in_phase)
+        #next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
+        next_active = (((int(second_in_phase / 10)) * 10) + 10) %180
+        OSet=self.minsec(next_active)
+        print("Next Active %d in secs is %d Min %d "%(next_active,OSet[0],OSet[1]))
+
         self.logger.info(str.format('Band {} Seconds {} next {} ', self.selected_band, second_in_phase, next_active))
 
         for b in self.beacons:
