@@ -3,6 +3,11 @@ import logging
 import sys
 import datetime
 import time
+from enum import Enum
+
+class beaconFld(Enum):
+    call, location = range(2)
+
 
 
 class beacon(object):
@@ -95,18 +100,26 @@ class beacons(object):
         ts_now = datetime.datetime.now()
         time_diff = (beacons.ref_datetime - ts_now).seconds
         next_beacon = ('Unk', 'Unk')
-        second_in_phase = 300 - ((time_diff) % 300)
+        #second_in_phase = 300 - ((time_diff) % 300)
+        second_in_phase=ts_now.timestamp()%180
         print("Seconds in Phase = %d" % second_in_phase)
         # next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
-        next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
+        next_active = (((int(second_in_phase / 10)) * 10) + 0) % 180
         OSet = self.minsec(next_active)
-        print("Next Active %d in secs is %d Min %d " % (next_active, OSet[0], OSet[1]))
+        print("Next Active %d in secs is %d Min %d " % (next_active,
+                                                        OSet[0],
+                                                        OSet[1]))
 
-        self.logger.info(str.format('Band {} Seconds {} next {} ', self.selected_band, second_in_phase, next_active))
+        self.logger.info(str.format('Band {} Seconds {} next {} ',
+                                    self.selected_band,
+                                    second_in_phase,
+                                    next_active))
 
         for b in self.beacons:
             if b.band_time[self.selected_band] == next_active:
-                self.logger.info(str.format('Band time Index {}  {}', b.CALL, b.band_time[self.selected_band]))
+                self.logger.info(str.format('Band time Index {}  {}',
+                                            b.CALL,
+                                            b.band_time[self.selected_band]))
                 next_beacon = (b.CALL, b.Country)
                 return next_beacon
         self.logger.error(str.format('Can not calculate next beacon'))
@@ -119,9 +132,13 @@ class beacons(object):
         while (timeout > 0):
             timeout = timeout - delay
             next_station = self.getstation()
-            self.logger.info(str.format('Call {} Country {}', next_station[0], next_station[1]))
-            print(str.format('{} {} Mhz Station {}  Country {} ', self.freq[self.selected_band],
-                             self.bands[self.selected_band], next_station[0],
+            self.logger.info(str.format('Call {} Country {}',
+                                        next_station[beaconFld.call.value],
+                                        next_station[beaconFld.location.value]))
+            print(str.format('{} {} Mhz Station {}  Country {} ',
+                             self.freq[self.selected_band],
+                             self.bands[self.selected_band],
+                             next_station[beaconFld.call.value],
                              next_station[1]))
             time.sleep(delay)
             tnow, delay = self.getdelay()
