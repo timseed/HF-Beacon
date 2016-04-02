@@ -28,22 +28,17 @@ class beacon(object):
         :param tstr:  In format of Min:Secs
         :return: int time_in_seconds
         '''
-
         try:
             min, sec = tstr.split(':')
             return int(min) * 60 + int(sec)
         except:
+            print("Error Reading Time Definition ")
             return -1
 
 
 class beacons(object):
-
     freq = [14.1, 18.11, 21.15, 24.930, 28.2]  # in Mhz
-    ref_datetime=datetime.datetime(2016,1,1,0,0,0)
-
-
-
-
+    ref_datetime = datetime.datetime(2016, 1, 1, 0, 0, 1)
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -83,28 +78,29 @@ class beacons(object):
     def getdelay(self):
         tnow = datetime.datetime.now()
         delay = 10.0 - tnow.timestamp() % 10
+        print(str.format("tnow {}   delay {}",tnow,delay))
         return tnow, delay
 
-    def minsec(self,offset):
+    def minsec(self, offset):
         '''
         Return Minute and Seconds offset of Timeslice
         :param offset:
         :return: Tuple (Min,Sec)
         '''
-        Min=int(offset/60)
-        Sec=offset-(Min*60)
-        return (Min,Sec)
+        Min = int(offset / 60)
+        Sec = offset - (Min * 60)
+        return (Min, Sec)
 
     def getstation(self):
         ts_now = datetime.datetime.now()
-        time_diff=(beacons.ref_datetime - ts_now).seconds
+        time_diff = (beacons.ref_datetime - ts_now).seconds
         next_beacon = ('Unk', 'Unk')
-        second_in_phase = 300-((time_diff) % 300)
-        print("Seconds in Phase = %d"%second_in_phase)
-        #next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
-        next_active = (((int(second_in_phase / 10)) * 10) + 10) %180
-        OSet=self.minsec(next_active)
-        print("Next Active %d in secs is %d Min %d "%(next_active,OSet[0],OSet[1]))
+        second_in_phase = 300 - ((time_diff) % 300)
+        print("Seconds in Phase = %d" % second_in_phase)
+        # next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
+        next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
+        OSet = self.minsec(next_active)
+        print("Next Active %d in secs is %d Min %d " % (next_active, OSet[0], OSet[1]))
 
         self.logger.info(str.format('Band {} Seconds {} next {} ', self.selected_band, second_in_phase, next_active))
 
@@ -124,7 +120,8 @@ class beacons(object):
             timeout = timeout - delay
             next_station = self.getstation()
             self.logger.info(str.format('Call {} Country {}', next_station[0], next_station[1]))
-            print(str.format('{} {} Mhz Station {}  Country {} ', self.freq[self.selected_band],self.bands[self.selected_band], next_station[0],
+            print(str.format('{} {} Mhz Station {}  Country {} ', self.freq[self.selected_band],
+                             self.bands[self.selected_band], next_station[0],
                              next_station[1]))
             time.sleep(delay)
             tnow, delay = self.getdelay()
@@ -153,3 +150,5 @@ if __name__ == "__main__":
     dx.SetBand(int(sys.argv[1]))
     dx.run(timeout=5000)
     # dx.dump_band(4)
+    junk=1
+    junk=1
