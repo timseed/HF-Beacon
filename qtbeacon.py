@@ -25,11 +25,8 @@ class qtbeacon(QtCore.QThread,beacons):
         self.BEACON.emit(next_station)
         return next_station
 
-    def start(self,timeout=5000):
-        super(qtbeacon,self).start(timeout)
-
     def run(self):
-        self.start(5000)
+        self.beacon_start(5000)
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
@@ -42,7 +39,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
     dx = qtbeacon()
     #dx.SetBand(int(sys.argv[1]))
-    dx.start()
+    dx.beacon_start()
     # dx.dump_band(4)
     junk=1
     junk=1
