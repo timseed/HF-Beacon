@@ -18,6 +18,20 @@ Valid bands are the same as the HF DXCC Network
 
     14,18,21,24,28
 
+#To See all Bands
+
+    dx=beacons()
+    dx.run(timeout=5000)
+
+#QT Mode
+
+This is a qtbeacon class - which inherits everything from beacon - but obviously needs qt (tested using qt5 only).
+It emits a signal called BEACON - which is a list in the list are the tuple for the beacon station (call, country, frequency).
+
+
+
+
+
 ##Logging
 
 If you want to see what is going on then add logging

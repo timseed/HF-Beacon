@@ -5,8 +5,9 @@ import datetime
 import time
 from enum import Enum
 
+
 class beaconFld(Enum):
-    call, location = range(2)
+    call, location, freq = range(3)
 
 
 
@@ -42,13 +43,15 @@ class beacon(object):
 
 
 class beacons(object):
+
+    # Some Signals we want to send from this class
     freq = [14.1, 18.11, 21.15, 24.930, 28.2]  # in Mhz
     ref_datetime = datetime.datetime(2016, 1, 1, 0, 0, 1)
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.bands = [14, 18, 21, 24, 28]  # in Mhz
-        self.selected_band = 0  # 14 Mhz
+        self.selected_band = -1   # Means ALL BANDS
         self.beacons = []
         # Setup the Beacon Definitions
         self.beacons.append(beacon('U1UN', 'United Nations', '00:00', '00:10', '00:20', '00:30', '00:40', 'UNRC', 'OK'))
@@ -69,6 +72,7 @@ class beacons(object):
         self.beacons.append(beacon('LU4AA', 'Argentina', '02:30', '02:40', '02:50', '00:00', '00:10', 'RCA', 'OK'))
         self.beacons.append(beacon('OA4B', 'Peru', '02:40', '02:50', '00:00', '00:10', '00:20', 'RCP', 'OK'))
         self.beacons.append(beacon('YV5B', 'Venezuela', '02:50', '00:00', '00:10', '00:20', '00:30', 'RCV', 'OK'))
+        self.logger.info("Beacon class initialized")
 
     def SetBand(self, band):
         if band in self.bands:
@@ -100,10 +104,8 @@ class beacons(object):
         ts_now = datetime.datetime.now()
         time_diff = (beacons.ref_datetime - ts_now).seconds
         next_beacon = ('Unk', 'Unk')
-        #second_in_phase = 300 - ((time_diff) % 300)
         second_in_phase=ts_now.timestamp()%180
         print("Seconds in Phase = %d" % second_in_phase)
-        # next_active = (((int(second_in_phase / 10)) * 10) + 10) % 180
         next_active = (((int(second_in_phase / 10)) * 10) + 0) % 180
         OSet = self.minsec(next_active)
         print("Next Active %d in secs is %d Min %d " % (next_active,
@@ -114,16 +116,26 @@ class beacons(object):
                                     self.selected_band,
                                     second_in_phase,
                                     next_active))
+        next_station =[]
+        if self.selected_band !=-1:
+            for b in self.beacons:
+                if self.selected_band != -1 and b.band_time[self.selected_band] == next_active:
+                    self.logger.info(str.format('Band time Index {}  {}',
+                                                b.CALL,
+                                                b.band_time[self.selected_band]))
+                    next_beacon = (b.CALL, b.Country, beacon.freq[self.selected_band])
+                    next_station.append(next_beacon)
+                    #We are in Single Band Mode - find one and quit this loop
+                    break
+        else:
+            for band in range(5):
+                    for b in self.beacons:
+                        if b.band_time[band] == next_active:
+                           next_beacon = (b.CALL, b.Country,  beacon.freq[band])
+                           next_station.append(next_beacon)
+                           break
 
-        for b in self.beacons:
-            if b.band_time[self.selected_band] == next_active:
-                self.logger.info(str.format('Band time Index {}  {}',
-                                            b.CALL,
-                                            b.band_time[self.selected_band]))
-                next_beacon = (b.CALL, b.Country)
-                return next_beacon
-        self.logger.error(str.format('Can not calculate next beacon'))
-        return next_beacon
+        return next_station
 
     def run(self, timeout=30):
         tnow, delay = self.getdelay()
@@ -131,20 +143,21 @@ class beacons(object):
         self.logger.info(str.format('delay   is {}', delay))
         while (timeout > 0):
             timeout = timeout - delay
-            next_station = self.getstation()
-            self.logger.info(str.format('Call {} Country {}',
-                                        next_station[beaconFld.call.value],
-                                        next_station[beaconFld.location.value]))
-            print(str.format('{} {} Mhz Station {}  Country {} ',
-                             self.freq[self.selected_band],
-                             self.bands[self.selected_band],
-                             next_station[beaconFld.call.value],
-                             next_station[1]))
+            next_station = self.getstation()   # Returns an Array of Stations
+            print("--------------")
+            for ns in next_station:
+               self.logger.info(str.format('Call {} Country {} Freq {}',
+                                        ns[beaconFld.call.value],
+                                        ns[beaconFld.location.value],
+                                        ns[beaconFld.freq.value]))
+
+               print(str.format('Call {} Country {} Freq {}',
+                                        ns[beaconFld.call.value],
+                                        ns[beaconFld.location.value],
+                                        ns[beaconFld.freq.value]))
+            
             time.sleep(delay)
             tnow, delay = self.getdelay()
-
-            self.logger.info(str.format('timenow is {}', tnow.timestamp()))
-            self.logger.info(str.format('delay   is {}', delay))
         self.logger.info('Loop run ended')
 
     def dump_band(self, band_id):
@@ -163,8 +176,8 @@ if __name__ == "__main__":
     # add the handlers to the logger
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
-    dx = beacons()
-    dx.SetBand(int(sys.argv[1]))
+    dx = beacon()
+    #dx.SetBand(int(sys.argv[1]))
     dx.run(timeout=5000)
     # dx.dump_band(4)
     junk=1
