@@ -5,7 +5,7 @@ import logging
 #This code requires QT
 
 
-class qtbeacon(QtCore.QObject,beacons):
+class qtbeacon(QtCore.QThread,beacons):
     """
     Same as the beacon class however this emits a signal called BEACON
 
@@ -25,6 +25,12 @@ class qtbeacon(QtCore.QObject,beacons):
         self.BEACON.emit(next_station)
         return next_station
 
+    def start(self,timeout=5000):
+        super(qtbeacon,self).start(timeout)
+
+    def run(self):
+        self.start(5000)
+
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -36,7 +42,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
     dx = qtbeacon()
     #dx.SetBand(int(sys.argv[1]))
-    dx.run(timeout=5000)
+    dx.start()
     # dx.dump_band(4)
     junk=1
     junk=1

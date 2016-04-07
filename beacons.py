@@ -137,7 +137,7 @@ class beacons(object):
 
         return next_station
 
-    def run(self, timeout=30):
+    def start(self, timeout=30):
         tnow, delay = self.getdelay()
         self.logger.info(str.format('timenow is {}', tnow.timestamp()))
         self.logger.info(str.format('delay   is {}', delay))
