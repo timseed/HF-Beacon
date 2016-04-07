@@ -25,6 +25,7 @@ class beacon(object):
         self.band_time.append(beacon.time_str_to_secs(b28))
         self.Owner = Owner
         self.status = status
+        self.logger =logging.getLogger(__name__)
 
     @staticmethod
     def time_str_to_secs(tstr):
@@ -38,7 +39,7 @@ class beacon(object):
             min, sec = tstr.split(':')
             return int(min) * 60 + int(sec)
         except:
-            print("Error Reading Time Definition ")
+            self.logger.error("Error Reading Time Definition")
             return -1
 
 
@@ -176,9 +177,9 @@ if __name__ == "__main__":
     # add the handlers to the logger
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
-    dx = beacon()
+    dx = beacons()
     #dx.SetBand(int(sys.argv[1]))
-    dx.run(timeout=5000)
-    # dx.dump_band(4)
+    dx.beacon_start(timeout=5000)
+    dx.dump_band(4)
     junk=1
     junk=1
