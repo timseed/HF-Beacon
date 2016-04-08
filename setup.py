@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='beacons',
-    version='1.2',
+    version='1.2.1',
     packages=[''],
     url='',
     license='Public Licence',

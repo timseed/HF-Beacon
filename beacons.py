@@ -5,11 +5,8 @@ import datetime
 import time
 from enum import Enum
 
-
 class beaconFld(Enum):
     call, location, freq = range(3)
-
-
 
 class beacon(object):
     freq = [14.1, 18.11, 21.15, 24.930, 28.2]  # in Mhz
@@ -39,7 +36,6 @@ class beacon(object):
             min, sec = tstr.split(':')
             return int(min) * 60 + int(sec)
         except:
-            self.logger.error("Error Reading Time Definition")
             return -1
 
 
@@ -88,7 +84,7 @@ class beacons(object):
     def getdelay(self):
         tnow = datetime.datetime.now()
         delay = 10.0 - tnow.timestamp() % 10
-        print(str.format("tnow {}   delay {}",tnow,delay))
+        self.logger.info(str.format("tnow {}   delay {}",tnow,delay))
         return tnow, delay
 
     def minsec(self, offset):
@@ -106,10 +102,10 @@ class beacons(object):
         time_diff = (beacons.ref_datetime - ts_now).seconds
         next_beacon = ('Unk', 'Unk')
         second_in_phase=ts_now.timestamp()%180
-        print("Seconds in Phase = %d" % second_in_phase)
+        self.logger.info("Seconds in Phase = %d" % second_in_phase)
         next_active = (((int(second_in_phase / 10)) * 10) + 0) % 180
         OSet = self.minsec(next_active)
-        print("Next Active %d in secs is %d Min %d " % (next_active,
+        self.logger.info("Next Active %d in secs is %d Min %d " % (next_active,
                                                         OSet[0],
                                                         OSet[1]))
 
@@ -145,14 +141,14 @@ class beacons(object):
         while (timeout > 0):
             timeout = timeout - delay
             next_station = self.getstation()   # Returns an Array of Stations
-            print("--------------")
+            self.logger.info("--------------")
             for ns in next_station:
                self.logger.info(str.format('Call {} Country {} Freq {}',
                                         ns[beaconFld.call.value],
                                         ns[beaconFld.location.value],
                                         ns[beaconFld.freq.value]))
 
-               print(str.format('Call {} Country {} Freq {}',
+               self.logger.info(str.format('Call {} Country {} Freq {}',
                                         ns[beaconFld.call.value],
                                         ns[beaconFld.location.value],
                                         ns[beaconFld.freq.value]))
@@ -162,16 +158,16 @@ class beacons(object):
         self.logger.info('Loop run ended')
 
     def dump_band(self, band_id):
-        print(str.format('Dumping Band ID {}', band_id))
+        self.logger.info(str.format('Dumping Band ID {}', band_id))
         for b in self.beacons:
-            print(str.format('Time offset {} ', b.band_time[band_id]))
+            self.logger.info(str.format('Time offset {} ', b.band_time[band_id]))
 
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.ERROR)
+    handler.setLevel(logging.INFO)
     handler.setFormatter(formatter)
 
     # add the handlers to the logger
