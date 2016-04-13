@@ -13,6 +13,10 @@ class qtbeacon(QtCore.QThread,beacons):
     """
 
     BEACON = QtCore.pyqtSignal(list)
+    def __init__(self):
+         QtCore.QThread.__init__(self)
+         self.logger = logging.getLogger(__name__)
+
 
     def getstation(self):
         """
@@ -21,7 +25,7 @@ class qtbeacon(QtCore.QThread,beacons):
         :return:
         """
         next_station = super(qtbeacon,self).getstation()
-        logger.debug("Emit BEACON")
+        self.logger.debug("Emit BEACON")
         self.BEACON.emit(next_station)
         return next_station
 

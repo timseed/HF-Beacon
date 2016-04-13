@@ -34,7 +34,8 @@ It emits a signal called BEACON - which is a list in the list are the tuple for 
 
 ##Logging
 
-If you want to see what is going on then add logging
+If you want to see what is going on then add logging in the calling class - and then set the required logging level.
+
 
     import logging
     from beacons import beacons
@@ -49,6 +50,6 @@ If you want to see what is going on then add logging
 #To Do
 
 * Maybe add 100 Watt, 10 W, 1W and .1W sections
-* Range and brearing from your QTH
+* Range and brearing from your QTH 
 
 
