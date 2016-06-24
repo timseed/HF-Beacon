@@ -1,12 +1,12 @@
 from distutils.core import setup
 
 setup(
-    name='beacons',
-    version='1.2.2',
-    packages=[''],
+    name='ham.beacons',
+    version='',
+    packages=['ham', 'ham.beacon'],
     url='',
-    license='Public Licence',
-    author='timothyhseed',
-    author_email='a45wg@sy-edm.com',
-    description='DX Beacon Calculator'
+    license='',
+    author='tim',
+    author_email='tim@sy-edm.com',
+    description=''
 )
