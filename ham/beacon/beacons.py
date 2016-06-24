@@ -1,12 +1,17 @@
-__author__ = 'timseed'
+
 import logging
 import sys
 import datetime
 import time
 from enum import Enum
 
-class beaconFld(Enum):
+__author__ = 'timseed'
+
+
+class beaconFld (Enum):
+
     call, location, freq = range(3)
+
 
 class beacon(object):
     freq = [14.1, 18.11, 21.15, 24.930, 28.2]  # in Mhz

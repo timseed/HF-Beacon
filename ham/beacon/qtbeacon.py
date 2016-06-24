@@ -1,6 +1,9 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from beacons import *
 import logging
+
+from PyQt5 import QtCore
+
+from ham.beacon.beacons import *
+
 
 #This code requires QT
 

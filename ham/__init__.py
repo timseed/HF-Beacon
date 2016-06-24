@@ -1,0 +1,1 @@
+from ham.beacon import *
